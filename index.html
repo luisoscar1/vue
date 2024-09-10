@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+
+<body>
+    <div id="main">
+
+
+        <button @click="contador++">
+            {{ contador }}
+        </button>
+
+        <hr>
+        <label>
+            nombre
+        </label>
+        <input type="" onkeyup="copy(this)" v-model="username">
+        <label>
+            tu nombre: {{ username }}
+        </label>
+
+
+        <hr>
+
+
+
+        <input type="number" v-model="numero1">
+        <hr>
+        <br>
+        <input type="number" v-model="numero2">
+        <hr>
+        <br>
+        <button v-on:click="resultado=numero1+numero2">
+            sumar
+        </button>
+        <label>
+           el resultado de la suma es {{ resultado }}
+        </label>
+
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const message = ref('Hello vue!')
+                let contador
+                let username
+                let numero1
+                let numero2
+                let resultado
+
+                return {
+                    message,
+                    contador: ref(0),
+                    username: ref(''),
+                    numero1: ref(0),
+                    numero2: ref(0),
+                    resultado: ref(0)
+                }
+            }
+        }).mount('#main')
+    </script>
+</body>
+
+</html>
