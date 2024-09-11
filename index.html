@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    
+
 </head>
 
 <body>
@@ -40,8 +40,24 @@
             sumar
         </button>
         <label>
-           el resultado de la suma es {{ resultado }}
+            el resultado de la suma es {{ resultado }}
         </label>
+        <br>
+        <hr>
+        <form>
+            <div v-for="item in usuarios" :key="item.id">
+                Nombre: {{ item.name }} -
+                Edad: {{ item.edad }}
+            </div>
+            <label>
+                nombre
+            </label>
+            <input type="text" v-model="name">
+            <input type="text" v-model="edad">
+            <button v-on:click="usuariosNuevos" type="button">
+                guardar
+            </button>
+        </form>
 
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -52,18 +68,42 @@
             setup() {
                 const message = ref('Hello vue!')
                 let contador
-                let username
                 let numero1
                 let numero2
                 let resultado
-
+                let name = ref(0)
+                let edad =ref(0)
+                let usuarios = ref([
+                    {
+                        "name": "oscar",
+                        "edad": "20"
+                    },
+                ])
                 return {
                     message,
                     contador: ref(0),
                     username: ref(''),
                     numero1: ref(0),
                     numero2: ref(0),
-                    resultado: ref(0)
+                    resultado: ref(0),
+                    usuarios,
+                    edad
+                }
+
+
+            },
+            methods: {
+                usuariosNuevos() {
+                    
+
+                    let nuevo = {
+                        "name": this.name,
+                        "edad": this.edad
+                    }
+                    this.usuarios.push(nuevo)
+                    this.name = ''
+                    this.edad = ''
+
                 }
             }
         }).mount('#main')
