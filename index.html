@@ -10,9 +10,9 @@
 
 <body>
     <div id="main">
-
-
-        <button @click="contador++">
+        <!--V-if 
+ -->
+        <!-- <button @click="contador++">
             {{ contador }}
         </button>
 
@@ -23,14 +23,10 @@
         <input type="" onkeyup="copy(this)" v-model="username">
         <label>
             tu nombre: {{ username }}
-        </label>
+        </label> -->
 
 
-        <hr>
-
-
-
-        <input type="number" v-model="numero1">
+        <!--  <input type="number" v-model="numero1">
         <hr>
         <br>
         <input type="number" v-model="numero2">
@@ -58,7 +54,33 @@
                 guardar
             </button>
         </form>
+ -->
 
+        <hr>
+        <form @submit.prevent="onSubmit" v-if="confirmar">
+
+            <label>
+                Email
+            </label>
+            <input type="email" v-model="email">
+
+
+            <label>
+                Password
+            </label>
+            <input type="password" v-model="password">
+
+            <button>
+                guardar
+            </button>
+            
+        </form>
+
+        <div v-if="!confirmar" >
+
+            <h3>ya iniciaste sesion</h3>
+        </div>
+        
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script>
@@ -67,34 +89,44 @@
         createApp({
             setup() {
                 const message = ref('Hello vue!')
-                let contador
+                /* let contador
                 let numero1
                 let numero2
                 let resultado
                 let name = ref(0)
-                let edad =ref(0)
+                let edad = ref(0)
                 let usuarios = ref([
                     {
                         "name": "oscar",
                         "edad": "20"
                     },
-                ])
+                ]) */
+                let email
+                let password
+                let confirmar
+
                 return {
-                    message,
+                    /* message,
                     contador: ref(0),
                     username: ref(''),
                     numero1: ref(0),
                     numero2: ref(0),
                     resultado: ref(0),
                     usuarios,
-                    edad
+                    edad */
+                    email: ref(''),
+                    password: ref(''),
+                    confirmar: ref(true)
+
+
+
                 }
 
 
             },
             methods: {
-                usuariosNuevos() {
-                    
+                /* usuariosNuevos() {
+
 
                     let nuevo = {
                         "name": this.name,
@@ -104,7 +136,31 @@
                     this.name = ''
                     this.edad = ''
 
+                } */
+
+
+                onSubmit(e) {
+                    let file = "users.json";
+
+                    fetch(file)
+                        .then(response => response.json())
+                        .then(response => {
+                            response.forEach((user) => {
+                                if (user.email == this.email && user.password==this.password) {
+                                    this.confirmar=false
+                                    
+                                }
+
+                                
+                            });
+                            if (this.confirmar==true) {
+                                    alert("no se ha encontrado el usuario")
+                             }
+                        })
                 }
+
+
+
             }
         }).mount('#main')
     </script>
