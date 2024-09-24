@@ -59,7 +59,7 @@
  -->
 
         <hr>
-        <form @submit.prevent="onSubmit" v-if="confirmar">
+        <form @submit.prevent="login" v-if="!confirmar">
 
             <label>
                 Email
@@ -78,7 +78,7 @@
 
         </form>
 
-        <div v-if="!confirmar">
+        <div v-if="confirmarTabla">
 
 
             <!-- para no batallar usare el componente de tabla de boostrap -->
@@ -90,40 +90,68 @@
                         <th scope="col">username</th>
                         <th scope="col">Email</th>
                         <th scope="col">Calle</th>
+                        <th scope="col">Acciones</th>
 
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr v-for="item in users" :key="item.id">
                         <td>
-                            <div v-for="item in usuarios" :key="item.id">
-                                {{ item.id }}
-                            </div>
+                            {{ item.id }}
+                        <td>
+                            {{ item.name }}
                         </td>
                         <td>
-                            <div v-for="item in usuarios" :key="item.id">
-                                {{ item.name }}
-                            </div>
+                            {{ item.username }}
                         </td>
                         <td>
-                            <div v-for="item in usuarios" :key="item.id">
-                                {{ item.username }}
-                            </div>
+                            {{ item.email }}
                         </td>
                         <td>
-                            <div v-for="item in usuarios" :key="item.id">
-                                {{ item.email }}
-                            </div>
+                            {{ item.address.street }}
                         </td>
                         <td>
-                            <div v-for="item in usuarios" :key="item.id">
-                                {{ item.address.street }}
-                            </div>
+                            <button v-on:click="editar(item.email)">
+                                Editar
+                            </button>
+                            <button v-on:click="borra(item.email)">
+                                Eliminar
+                            </button>
                         </td>
                     </tr>
+
                 </tbody>
             </table>
         </div>
+
+
+        <form @submit.prevent="editar" v-if="editarBandera">
+            <label>
+                Nombre:
+            </label>
+            <input type="text" v-model="name" :placeholder="name" />
+
+            <label>
+                username:
+            </label>
+            <input type="text" v-model="username" :placeholder="username" />
+
+            <label>
+                Email
+            </label>
+            <input type="email" v-model="email" :placeholder="email">
+
+            <label>
+                Calle:
+            </label>
+            <input type="text" v-model="address" :placeholder="address" />
+
+            <button v-on:click="guardarCambios(name, username, email, address)">
+                guardar
+            </button>
+        </form>
+
+
 
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -148,7 +176,12 @@
                 let email
                 let password
                 let confirmar
-                let usuarios
+                let users
+                let editarBandera
+                let confirmarTabla
+                let name
+                let username
+                let address
 
                 return {
                     /* message,
@@ -161,10 +194,13 @@
                     edad */
                     email: ref(''),
                     password: ref(''),
-                    confirmar: ref(true),
-
-                    usuarios: ref([])
-
+                    confirmar: ref(false),
+                    users: ref([]),
+                    editarBandera: ref(false),
+                    confirmarTabla: ref(false),
+                    name: ref(''),
+                    username: ref(''),
+                    address: ref(''),
 
                 }
 
@@ -185,7 +221,7 @@
                 } */
 
 
-                onSubmit(e) {
+                /* onSubmit(e) {
                     let file = "users.json";
 
                     fetch(file)
@@ -203,10 +239,106 @@
                                 alert("no se ha encontrado el usuario")
                             }
                         })
+                }, */
+
+                guardarCambios(name, username, email, address) {
+                    this.confirmarTabla = true
+                    this.editarBandera = false
+                    fetch("users.json")
+                        .then(response => response.json())
+                        .then(response => {
+                            for (let i = 0; i < response.length; i++) {
+                                 if (response[i].email === this.email) {
+
+                                    response[i].name = this.name;
+                                    response[i].username = this.username;
+                                    response[i].email = this.email;
+                                    response[i].address.street = this.address;
+
+                                    this.users = response;
+
+
+                                    break;  
+                                }
+                            }
+                        });
+
+                },
+                login() {
+                    fetch("users.json")
+                        .then(response => response.json())
+                        .then(response => {
+                            response.forEach((user) => {
+
+                                if (user.email == this.email) {
+                                    if (user.password == this.password) {
+
+                                        this.confirmar = true
+                                        this.confirmarTabla = true
+                                        localStorage.setItem("user_data", JSON.stringify(e));
+                                    }
+                                }
+                            });
+                            if (!this.confirmar) {
+                                alert("Verifique su información")
+                            }
+
+                        });
+                },
+
+
+                borra(email) {
+                    fetch("users.json")
+                        .then(response => response.json())
+                        .then(response => {
+                            console.log(response)
+
+                            for (let i = 0; i < response.length; i++) {
+                                if (response[i].email === email) {
+                                    console.log('Usuario eliminado:', response);
+
+                                    this.users = response;
+                                    break;
+                                }
+                            }
+                        });
+                },
+
+                editar(email) {
+                    this.confirmarTabla = false
+                    this.editarBandera = true
+                    fetch("users.json")
+                        .then(response => response.json())
+                        .then(response => {
+                            for (let i = 0; i < response.length; i++) {
+                                if (response[i].email === email) {
+                                    this.name = response[i].name;
+                                    this.username = response[i].username;
+                                    this.email = response[i].email;
+                                    this.address = response[i].address.street;
+
+                                    break;
+                                }
+                            }
+                        });
+                },
+            },
+            mounted() {
+                fetch("users.json")
+                    .then(response => response.json())
+                    .then(response => {
+
+                        this.users = response;
+
+                    });
+                let user_data = localStorage.getItem("user_data");
+                if (user_data != null) {
+
+                    user_data = JSON.parse(user_data)
+
+                    this.confirmar = true
+                    this.confirmarTabla = true
                 }
-
-
-
             }
         }).mount('#main')
     </script>
