@@ -248,7 +248,7 @@
                         .then(response => response.json())
                         .then(response => {
                             for (let i = 0; i < response.length; i++) {
-                                 if (response[i].email === this.email) {
+                                if (response[i].email === this.email) {
 
                                     response[i].name = this.name;
                                     response[i].username = this.username;
@@ -258,12 +258,13 @@
                                     this.users = response;
 
 
-                                    break;  
+                                    break;
                                 }
                             }
                         });
 
-                },
+                }, 
+               
                 login() {
                     fetch("users.json")
                         .then(response => response.json())
@@ -295,6 +296,7 @@
 
                             for (let i = 0; i < response.length; i++) {
                                 if (response[i].email === email) {
+                                    this.user = response.splice(i, 1)
                                     console.log('Usuario eliminado:', response);
 
                                     this.users = response;
