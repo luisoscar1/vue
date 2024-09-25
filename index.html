@@ -78,8 +78,40 @@
 
         </form>
 
-        <div v-if="confirmarTabla">
 
+
+
+        <form @submit.prevent="verTabla" v-if="agregarUsuario">
+            <label>
+                Nombre:
+            </label>
+            <input type="text" v-model="nuevoName" :placeholder="nuevoName" />
+
+            <label>
+                username:
+            </label>
+            <input type="text" v-model="nuevoUsername" :placeholder="nuevoUsername" />
+
+            <label>
+                Email
+            </label>
+            <input type="email" v-model="nuevoEmail" :placeholder="nuevoEmail">
+
+            <label>
+                Calle:
+            </label>
+            <input type="text" v-model="nuevoAddress" :placeholder="nuevoAddress" />
+
+            <button v-on:click="anadir(nuevoName, nuevoUsername, nuevoEmail, nuevoEmail)">
+                guardar
+            </button>
+        </form>
+
+
+        <div v-if="confirmarTabla">
+            <button v-on:click="anadir">
+                Agregar un nuevo usuario
+            </button>
 
             <!-- para no batallar usare el componente de tabla de boostrap -->
             <table class="table">
@@ -174,6 +206,7 @@
                     },
                 ]) */
                 let email
+                let nuevoEmail
                 let password
                 let confirmar
                 let users
@@ -182,7 +215,10 @@
                 let name
                 let username
                 let address
-
+                let nuevoName
+                let nuevoUsername
+                let nuevoAddress
+                let agregarUsuario
                 return {
                     /* message,
                     contador: ref(0),
@@ -201,6 +237,11 @@
                     name: ref(''),
                     username: ref(''),
                     address: ref(''),
+                    nuevoName: ref(''),
+                    nuevoUsername: ref(''),
+                    nuevoAddress: ref(''),
+                    nuevoEmail: ref(''),
+                    agregarUsuario: ref(false),
 
                 }
 
@@ -241,6 +282,12 @@
                         })
                 }, */
 
+
+                verTabla(){
+                    this.confirmarTabla = true
+                    this.agregarUsuario = false
+
+                },
                 guardarCambios(name, username, email, address) {
                     this.confirmarTabla = true
                     this.editarBandera = false
@@ -263,8 +310,29 @@
                             }
                         });
 
-                }, 
-               
+                },
+
+                anadir(name, username, email, address) {
+                    this.confirmarTabla = false
+                    this.agregarUsuario = true
+                    const nuevoUsuario = {
+                        name: this.nuevoName,
+                        username: this.nuevoUsername,
+                        email: this.nuevoEmail,
+                        address: {
+                            street: this.nuevoAddress
+                        }
+                    };
+                    console.log(nuevoUsuario)
+                    fetch("users.json")
+                        .then(response => response.json())
+                        .then(response => {
+                            this.users.push(nuevoUsuario);
+                         });
+
+
+                },
+
                 login() {
                     fetch("users.json")
                         .then(response => response.json())
